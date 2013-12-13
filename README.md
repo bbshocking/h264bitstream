@@ -5,7 +5,7 @@ Goals:
 
 * Open-source library for reading and writing H264 standard-compliant stream
 
-* Create new stream for user-defined syntax parameters through syntax param file
+* Create new stream for user-defined syntax parameters
 
 
-Refer 'README' file for more details.
+Refer INTRODUCTION file for more details.
