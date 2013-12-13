@@ -48,6 +48,7 @@
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
+				CompileAs="2"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -121,6 +122,7 @@
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
+				CompileAs="2"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -175,19 +177,19 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\h264_analyze.cpp"
+				RelativePath="..\h264_analyze.c"
 				>
 			</File>
 			<File
-				RelativePath="..\h264_avcc.cpp"
+				RelativePath="..\h264_avcc.c"
 				>
 			</File>
 			<File
-				RelativePath="..\h264_sei.cpp"
+				RelativePath="..\h264_sei.c"
 				>
 			</File>
 			<File
-				RelativePath="..\h264_stream.cpp"
+				RelativePath="..\h264_stream.c"
 				>
 			</File>
 		</Filter>

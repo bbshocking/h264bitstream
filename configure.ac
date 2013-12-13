@@ -1,6 +1,6 @@
 AC_INIT(h264bitstream, 0.1.9, aizvorski@gmail.com)
 
-AC_CONFIG_SRCDIR(./h264_stream.cpp)
+AC_CONFIG_SRCDIR(./h264_stream.c)
 
 AC_CONFIG_AUX_DIR(build-aux)
 
@@ -22,7 +22,6 @@ AC_SUBST(EXTRA_CFLAGS)
 AM_INIT_AUTOMAKE([foreign])
 
 AC_PROG_CC
-AC_PROG_CXX
 AM_PROG_CC_C_O
 AC_PROG_LD
 AC_PROG_INSTALL
