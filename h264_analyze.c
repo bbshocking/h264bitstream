@@ -29,7 +29,7 @@
 
 #define BUFSIZE 32*1024*1024
 
-#if (defined(__GNUC__))
+#if (defined(__GNUC__) || (defined(WIN32)))
 #define HAVE_GETOPT_LONG
 
 #include <getopt.h>
