@@ -119,6 +119,7 @@ int main(int argc, char *argv[])
     uint8_t* p = buf;
 
     int nal_start, nal_end;
+	int nal_no = 0, ret = 0;
 
     while (1)
     {
@@ -131,11 +132,13 @@ int main(int argc, char *argv[])
 
         sz += rsz;
 
-        while (find_nal_unit(p, sz, &nal_start, &nal_end) > 0)
+        while (((ret = find_nal_unit(p, sz, &nal_start, &nal_end)) > 0) || (ret == -1 && sz > 0))
         {
+            ++nal_no;
             if ( opt_verbose > 0 )
             {
-               fprintf( h264_dbgfile, "!! Found NAL at offset %lld (0x%04llX), size %lld (0x%04llX) \n",
+               fprintf( h264_dbgfile, "!! Found NAL %lld at offset %lld (0x%04llX), size %lld (0x%04llX) \n",
+                      (long long int)(nal_no),
                       (long long int)(off + (p - buf) + nal_start),
                       (long long int)(off + (p - buf) + nal_start),
                       (long long int)(nal_end - nal_start),
