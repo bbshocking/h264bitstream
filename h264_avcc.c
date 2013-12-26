@@ -40,7 +40,7 @@ int read_avcc(avcc_t* avcc, h264_stream_t* h, bs_t* b)
     int len = sequenceParameterSetLength;
     uint8_t* buf = (uint8_t*)malloc(len);
     len = bs_read_bytes(b, buf, len);
-    int rc = read_nal_unit(h, buf, len);
+    int rc = h264_read_nal_unit(h, buf, len);
     free(buf);
     if (h->nal->nal_unit_type != NAL_UNIT_TYPE_SPS) { continue; } // TODO report errors
     if (rc < 0) { continue; }
@@ -55,7 +55,7 @@ int read_avcc(avcc_t* avcc, h264_stream_t* h, bs_t* b)
     int len = pictureParameterSetLength;
     uint8_t* buf = (uint8_t*)malloc(len);
     len = bs_read_bytes(b, buf, len);
-    int rc = read_nal_unit(h, buf, len);
+    int rc = h264_read_nal_unit(h, buf, len);
     free(buf);
     if (h->nal->nal_unit_type != NAL_UNIT_TYPE_PPS) { continue; } // TODO report errors
     if (rc < 0) { continue; }
@@ -85,7 +85,7 @@ int write_avcc(avcc_t* avcc, h264_stream_t* h, bs_t* b)
     h->nal->nal_ref_idc = 3; // NAL_REF_IDC_PRIORITY_HIGHEST;
     h->nal->nal_unit_type = NAL_UNIT_TYPE_SPS;
     h->sps = avcc->sps_table[i];
-    int len = write_nal_unit(h, buf, max_len);
+    int len = h264_write_nal_unit(h, buf, max_len);
     if (len < 0) { free(buf); continue; } // TODO report errors
     int sequenceParameterSetLength = len;
     bs_write_u(b, 16, sequenceParameterSetLength);
@@ -101,7 +101,7 @@ int write_avcc(avcc_t* avcc, h264_stream_t* h, bs_t* b)
     h->nal->nal_ref_idc = 3; // NAL_REF_IDC_PRIORITY_HIGHEST;
     h->nal->nal_unit_type = NAL_UNIT_TYPE_PPS;
     h->pps = avcc->pps_table[i];
-    int len = write_nal_unit(h, buf, max_len);
+    int len = h264_write_nal_unit(h, buf, max_len);
     if (len < 0) { free(buf); continue; } // TODO report errors
     int pictureParameterSetLength = len;
     bs_write_u(b, 16, pictureParameterSetLength);
@@ -128,7 +128,7 @@ void debug_avcc(avcc_t* avcc)
   {
     //printf(" sequenceParameterSetLength\n", avcc->sequenceParameterSetLength );
     if (avcc->sps_table[i] == NULL) { printf(" null sps\n"); continue; }
-    debug_sps(avcc->sps_table[i]);
+    h264_debug_sps(avcc->sps_table[i]);
   }
 
   printf("\n");
@@ -137,6 +137,6 @@ void debug_avcc(avcc_t* avcc)
   {
     //printf(" pictureParameterSetLength\n", avcc->pictureParameterSetLength );
     if (avcc->pps_table[i] == NULL) { printf(" null pps\n"); continue; }
-    debug_pps(avcc->pps_table[i]);
+    h264_debug_pps(avcc->pps_table[i]);
   }
 }

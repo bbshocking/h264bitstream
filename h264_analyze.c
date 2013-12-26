@@ -50,12 +50,12 @@ static char options[] =
 "\t-v print more info\n"
 "\t-h print this message and exit\n";
 
-void usage( )
+void h264_usage( )
 {
 
     fprintf( stderr, "h264_analyze, version 0.2.0\n");
     fprintf( stderr, "Analyze H.264 bitstreams in Annex B format\n");
-    fprintf( stderr, "Usage: \n");
+    fprintf( stderr, "h264_usage: \n");
 
     fprintf( stderr, "h264_analyze [options] <input bitstream>\noptions:\n%s\n", options);
 }
@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
 
     h264_stream_t* h = h264_new();
 
-    if (argc < 2) { usage(); return EXIT_FAILURE; }
+    if (argc < 2) { h264_usage(); return EXIT_FAILURE; }
 
     int opt_verbose = 1;
     int opt_probe = 0;
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
                 break;
             case 'h':
             default:
-                usage( );
+                h264_usage( );
                 return 1;
         }
     }
@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
 
         sz += rsz;
 
-        while (((ret = find_nal_unit(p, sz, &nal_start, &nal_end)) > 0) || (ret == -1 && sz > 0))
+        while (((ret = h264_find_nal_unit(p, sz, &nal_start, &nal_end)) > 0) || (ret == -1 && sz > 0))
         {
             ++nal_no;
             if ( opt_verbose > 0 )
@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
             }
 
             p += nal_start;
-            read_nal_unit(h, p, nal_end - nal_start);
+            h264_read_nal_unit(h, p, nal_end - nal_start);
 
             if ( opt_probe && h->nal->nal_unit_type == NAL_UNIT_TYPE_SPS )
             {
@@ -167,9 +167,9 @@ int main(int argc, char *argv[])
             if ( opt_verbose > 0 )
             {
                 fprintf( h264_dbgfile, "XX ");
-                debug_bytes(p-4, nal_end - nal_start + 4 >= 16 ? 16: nal_end - nal_start + 4);
+                h264_debug_bytes(p-4, nal_end - nal_start + 4 >= 16 ? 16: nal_end - nal_start + 4);
 
-                debug_nal(h, h->nal);
+                h264_debug_nal(h, h->nal);
             }
 
             p += (nal_end - nal_start);
