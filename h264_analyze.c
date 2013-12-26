@@ -60,6 +60,8 @@ void h264_usage( )
     fprintf( stderr, "h264_analyze [options] <input bitstream>\noptions:\n%s\n", options);
 }
 
+int h264_test(char *infile);
+
 int main(int argc, char *argv[])
 {
     FILE* infile;
@@ -79,7 +81,7 @@ int main(int argc, char *argv[])
     extern char* optarg;
     extern int   optind;
 
-    while ( ( c = getopt_long( argc, argv, "o:p:hv", long_options, &long_options_index) ) != -1 )
+    while ( ( c = getopt_long( argc, argv, "o:p:hv:t", long_options, &long_options_index) ) != -1 )
     {
         switch ( c )
         {
@@ -93,6 +95,9 @@ int main(int argc, char *argv[])
             case 'v':
                 opt_verbose = atoi( optarg );
                 break;
+            case 't':
+                h264_test(argv[optind]);
+                return 0;
             case 'h':
             default:
                 h264_usage( );
@@ -200,5 +205,12 @@ int main(int argc, char *argv[])
     fclose(h264_dbgfile);
     fclose(infile);
 
+    return 0;
+}
+
+int h264_test(char *infile)
+{
+    fprintf(stdout, "test h264bitstream...\n");
+    
     return 0;
 }
