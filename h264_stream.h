@@ -433,93 +433,107 @@ void read_sei_payload( h264_stream_t* h, bs_t* b, int payloadType, int payloadSi
 void write_sei_payload( h264_stream_t* h, bs_t* b, int payloadType, int payloadSize);
 
 //NAL ref idc codes
-#define NAL_REF_IDC_PRIORITY_HIGHEST    3
-#define NAL_REF_IDC_PRIORITY_HIGH       2
-#define NAL_REF_IDC_PRIORITY_LOW        1
-#define NAL_REF_IDC_PRIORITY_DISPOSABLE 0
+typedef enum {
+    NAL_REF_IDC_PRIORITY_HIGHEST     = 3,
+    NAL_REF_IDC_PRIORITY_HIGH        = 2,
+    NAL_REF_IDC_PRIORITY_LOW         = 1, 
+    NAL_REF_IDC_PRIORITY_DISPOSABLE  = 0
+} nal_ref_idc_t;
 
 //Table 7-1 NAL unit type codes
-#define NAL_UNIT_TYPE_UNSPECIFIED                    0    // Unspecified
-#define NAL_UNIT_TYPE_CODED_SLICE_NON_IDR            1    // Coded slice of a non-IDR picture
-#define NAL_UNIT_TYPE_CODED_SLICE_DATA_PARTITION_A   2    // Coded slice data partition A
-#define NAL_UNIT_TYPE_CODED_SLICE_DATA_PARTITION_B   3    // Coded slice data partition B
-#define NAL_UNIT_TYPE_CODED_SLICE_DATA_PARTITION_C   4    // Coded slice data partition C
-#define NAL_UNIT_TYPE_CODED_SLICE_IDR                5    // Coded slice of an IDR picture
-#define NAL_UNIT_TYPE_SEI                            6    // Supplemental enhancement information (SEI)
-#define NAL_UNIT_TYPE_SPS                            7    // Sequence parameter set
-#define NAL_UNIT_TYPE_PPS                            8    // Picture parameter set
-#define NAL_UNIT_TYPE_AUD                            9    // Access unit delimiter
-#define NAL_UNIT_TYPE_END_OF_SEQUENCE               10    // End of sequence
-#define NAL_UNIT_TYPE_END_OF_STREAM                 11    // End of stream
-#define NAL_UNIT_TYPE_FILLER                        12    // Filler data
-#define NAL_UNIT_TYPE_SPS_EXT                       13    // Sequence parameter set extension
-                                             // 14..18    // Reserved
-#define NAL_UNIT_TYPE_CODED_SLICE_AUX               19    // Coded slice of an auxiliary coded picture without partitioning
-                                             // 20..23    // Reserved
-                                             // 24..31    // Unspecified
-
- 
+typedef enum {
+    NAL_UNIT_TYPE_UNSPECIFIED                  = 0,        // Unspecified
+    NAL_UNIT_TYPE_CODED_SLICE_NON_IDR          = 1,        // Coded slice of a non-IDR picture
+    NAL_UNIT_TYPE_CODED_SLICE_DATA_PARTITION_A = 2,        // Coded slice data partition A
+    NAL_UNIT_TYPE_CODED_SLICE_DATA_PARTITION_B = 3,        // Coded slice data partition B
+    NAL_UNIT_TYPE_CODED_SLICE_DATA_PARTITION_C = 4,        // Coded slice data partition C
+    NAL_UNIT_TYPE_CODED_SLICE_IDR              = 5,        // Coded slice of an IDR picture
+    NAL_UNIT_TYPE_SEI                          = 6,        // Supplemental enhancement information (SEI)
+    NAL_UNIT_TYPE_SPS                          = 7,        // Sequence parameter set
+    NAL_UNIT_TYPE_PPS                          = 8,        // Picture parameter set
+    NAL_UNIT_TYPE_AUD                          = 9,        // Access unit delimiter
+    NAL_UNIT_TYPE_END_OF_SEQUENCE              = 10,       // End of sequence
+    NAL_UNIT_TYPE_END_OF_STREAM                = 11,       // End of stream
+    NAL_UNIT_TYPE_FILLER                       = 12,       // Filler data
+    NAL_UNIT_TYPE_SPS_EXT                      = 13,       // Sequence parameter set extension
+                                               // 14..18    // Reserved
+    NAL_UNIT_TYPE_CODED_SLICE_AUX              = 19,       // Coded slice of an auxiliary coded picture without partitioning
+                                               // 20..23    // Reserved
+                                               // 24..31    // Unspecified
+} nal_unit_type_t;
 
 //7.4.3 Table 7-6. Name association to slice_type
-#define SH_SLICE_TYPE_P        0        // P (P slice)
-#define SH_SLICE_TYPE_B        1        // B (B slice)
-#define SH_SLICE_TYPE_I        2        // I (I slice)
-#define SH_SLICE_TYPE_SP       3        // SP (SP slice)
-#define SH_SLICE_TYPE_SI       4        // SI (SI slice)
-//as per footnote to Table 7-6, the *_ONLY slice types indicate that all other slices in that picture are of the same type
-#define SH_SLICE_TYPE_P_ONLY    5        // P (P slice)
-#define SH_SLICE_TYPE_B_ONLY    6        // B (B slice)
-#define SH_SLICE_TYPE_I_ONLY    7        // I (I slice)
-#define SH_SLICE_TYPE_SP_ONLY   8        // SP (SP slice)
-#define SH_SLICE_TYPE_SI_ONLY   9        // SI (SI slice)
+typedef enum {
+    SH_SLICE_TYPE_P       = 0,        // P (P slice)
+    SH_SLICE_TYPE_B       = 1,        // B (B slice)
+    SH_SLICE_TYPE_I       = 2,        // I (I slice)
+    SH_SLICE_TYPE_SP      = 3,        // SP (SP slice)
+    SH_SLICE_TYPE_SI      = 4,        // SI (SI slice)
+    //as per footnote to Table 7-6, the *_ONLY slice types indicate that all other slices in that picture are of the same type
+    SH_SLICE_TYPE_P_ONLY  = 5,        // P (P slice)
+    SH_SLICE_TYPE_B_ONLY  = 6,        // B (B slice)
+    SH_SLICE_TYPE_I_ONLY  = 7,        // I (I slice)
+    SH_SLICE_TYPE_SP_ONLY = 8,        // SP (SP slice)
+    SH_SLICE_TYPE_SI_ONLY = 9         // SI (SI slice)
+} sh_slice_type_t;
 
 //Appendix E. Table E-1  Meaning of sample aspect ratio indicator
-#define SAR_Unspecified  0           // Unspecified
-#define SAR_1_1        1             //  1:1
-#define SAR_12_11      2             // 12:11
-#define SAR_10_11      3             // 10:11
-#define SAR_16_11      4             // 16:11
-#define SAR_40_33      5             // 40:33
-#define SAR_24_11      6             // 24:11
-#define SAR_20_11      7             // 20:11
-#define SAR_32_11      8             // 32:11
-#define SAR_80_33      9             // 80:33
-#define SAR_18_11     10             // 18:11
-#define SAR_15_11     11             // 15:11
-#define SAR_64_33     12             // 64:33
-#define SAR_160_99    13             // 160:99
-                                     // 14..254           Reserved
-#define SAR_Extended      255        // Extended_SAR
+typedef enum {
+    SAR_Unspecified = 0,             // Unspecified
+    SAR_1_1         = 1,             // 1:1
+    SAR_12_11       = 2,             // 12:11
+    SAR_10_11       = 3,             // 10:11
+    SAR_16_11       = 4,             // 16:11
+    SAR_40_33       = 5,             // 40:33
+    SAR_24_11       = 6,             // 24:11
+    SAR_20_11       = 7,             // 20:11
+    SAR_32_11       = 8,             // 32:11
+    SAR_80_33       = 9,             // 80:33
+    SAR_18_11       = 10,            // 18:11
+    SAR_15_11       = 11,            // 15:11
+    SAR_64_33       = 12,            // 64:33
+    SAR_160_99      = 13,            // 160:99
+                   // 14..254        // Reserved
+    SAR_Extended    = 255            // Extended_SARe)
+} sar_t;
 
 //7.4.3.1 Table 7-7 reordering_of_pic_nums_idc operations for reordering of reference picture lists
-#define RPLR_IDC_ABS_DIFF_ADD       0
-#define RPLR_IDC_ABS_DIFF_SUBTRACT  1
-#define RPLR_IDC_LONG_TERM          2
-#define RPLR_IDC_END                3
+typedef enum {
+    RPLR_IDC_ABS_DIFF_ADD       = 0,
+    RPLR_IDC_ABS_DIFF_SUBTRACT  = 1,
+    RPLR_IDC_LONG_TERM          = 2,
+    RPLR_IDC_END                = 3,
+} rplr_idc_t;
 
 //7.4.3.3 Table 7-9 Memory management control operation (memory_management_control_operation) values
-#define MMCO_END                     0
-#define MMCO_SHORT_TERM_UNUSED       1
-#define MMCO_LONG_TERM_UNUSED        2
-#define MMCO_SHORT_TERM_TO_LONG_TERM 3
-#define MMCO_LONG_TERM_MAX_INDEX     4
-#define MMCO_ALL_UNUSED              5
-#define MMCO_CURRENT_TO_LONG_TERM    6
+typedef enum {
+    MMCO_END                     = 0,
+    MMCO_SHORT_TERM_UNUSED       = 1,
+    MMCO_LONG_TERM_UNUSED        = 2,
+    MMCO_SHORT_TERM_TO_LONG_TERM = 3,
+    MMCO_LONG_TERM_MAX_INDEX     = 4,
+    MMCO_ALL_UNUSED              = 5,
+    MMCO_CURRENT_TO_LONG_TERM    = 6
+} mmco_t;
 
 //7.4.2.4 Table 7-5 Meaning of primary_pic_type
-#define AUD_PRIMARY_PIC_TYPE_I       0                // I
-#define AUD_PRIMARY_PIC_TYPE_IP      1                // I, P
-#define AUD_PRIMARY_PIC_TYPE_IPB     2                // I, P, B
-#define AUD_PRIMARY_PIC_TYPE_SI      3                // SI
-#define AUD_PRIMARY_PIC_TYPE_SISP    4                // SI, SP
-#define AUD_PRIMARY_PIC_TYPE_ISI     5                // I, SI
-#define AUD_PRIMARY_PIC_TYPE_ISIPSP  6                // I, SI, P, SP
-#define AUD_PRIMARY_PIC_TYPE_ISIPSPB 7                // I, SI, P, SP, B
+typedef enum {
+    AUD_PRIMARY_PIC_TYPE_I       = 0,          // I
+    AUD_PRIMARY_PIC_TYPE_IP      = 1,          // I, P
+    AUD_PRIMARY_PIC_TYPE_IPB     = 2,          // I, P, B
+    AUD_PRIMARY_PIC_TYPE_SI      = 3,          // SI
+    AUD_PRIMARY_PIC_TYPE_SISP    = 4,          // SI, SP
+    AUD_PRIMARY_PIC_TYPE_ISI     = 5,          // I, SI
+    AUD_PRIMARY_PIC_TYPE_ISIPSP  = 6,          // I, SI, P, SP
+    AUD_PRIMARY_PIC_TYPE_ISIPSPB = 7           // I, SI, P, SP, B
+} aud_primary_pic_type_t;
 
-#define H264_PROFILE_BASELINE  66
-#define H264_PROFILE_MAIN      77
-#define H264_PROFILE_EXTENDED  88
-#define H264_PROFILE_HIGH     100
+typedef enum {
+    H264_PROFILE_BASELINE = 66,
+    H264_PROFILE_MAIN     = 77,
+    H264_PROFILE_EXTENDED = 88,
+    H264_PROFILE_HIGH     = 100
+} h264_profile_t;
 
 // file handle for debug output
 extern FILE* h264_dbgfile;
