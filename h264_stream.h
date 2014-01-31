@@ -30,6 +30,8 @@
 #include "bs.h"
 #include "h264_sei.h"
 
+#define H264_BS_VERSION "0.2.0"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
