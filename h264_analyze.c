@@ -52,12 +52,9 @@ static char options[] =
 
 void h264_usage( )
 {
+    fprintf( stderr, "h264_analyze (version %s)\n\n", H264_BS_VERSION);
 
-    fprintf( stderr, "h264_analyze, version 0.2.0\n");
-    fprintf( stderr, "Analyze H.264 bitstreams in Annex B format\n");
-    fprintf( stderr, "h264_usage: \n");
-
-    fprintf( stderr, "h264_analyze [options] <input bitstream>\noptions:\n%s\n", options);
+    fprintf( stderr, "usage:\th264_analyze [option] <input bitstream>\n\noption:\n%s\n", options);
 }
 
 int h264_test(char *infile);
@@ -208,9 +205,125 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-int h264_test(char *infile)
+int h264_test(char *filename)
 {
     fprintf(stdout, "test h264bitstream...\n");
     
+    FILE* infile;
+    FILE* outfile;
+    const int nal_prefix_size = 4;
+    char nal_prefix[nal_prefix_size]= {0,0,0,1};
+
+    uint8_t* buf = (uint8_t*)malloc( BUFSIZE );
+    uint8_t* wbuf = (uint8_t*)malloc( BUFSIZE );
+
+    h264_stream_t* rh = h264_new();
+    h264_stream_t* wh = h264_new();
+
+    infile = fopen(filename, "rb");
+    outfile = fopen("out.264", "wb");
+
+    if ((infile == NULL) || (outfile == NULL)) { fprintf( stderr, "!! Error: could not open file: %s \n", strerror(errno)); exit(EXIT_FAILURE); }
+
+
+    size_t rsz = 0, wsz = BUFSIZE;
+    size_t sz = 0, sz2 = 0;
+    int64_t off = 0;
+    uint8_t* p = buf, *wp = wbuf;
+
+    int nal_start, nal_end;
+	int nal_no = 0, ret = 0;
+
+    while (1)
+    {
+        rsz = fread(buf + sz, 1, BUFSIZE - sz, infile);
+        if (rsz == 0)
+        {
+            if (ferror(infile)) { fprintf( stderr, "!! Error: read failed: %s \n", strerror(errno)); break; }
+            break;  // if (feof(infile)) 
+        }
+
+        sz += rsz;
+
+        while ((ret = h264_find_nal_unit(p, sz, &nal_start, &nal_end)) > 0) 
+        {
+            ++nal_no;
+            
+            p += nal_start;
+            h264_peek_nal_unit(rh, p, nal_end - nal_start);
+            
+            memcpy(wp, nal_prefix, nal_prefix_size);
+            wp  += nal_prefix_size;
+            wsz -= nal_prefix_size;
+            
+            switch(rh->nal->nal_unit_type)
+            {
+                 case NAL_UNIT_TYPE_AUD:                
+                    h264_read_nal_unit(rh, p, nal_end - nal_start);
+                    
+                    sz2 = h264_write_nal_unit(rh, wp, wsz);
+                    
+                    fprintf(stdout, "AUD...\n");
+                    break;
+                 
+                 case NAL_UNIT_TYPE_SPS:                
+                    h264_read_nal_unit(rh, p, nal_end - nal_start);
+                    
+                    sz2 = h264_write_nal_unit(rh, wp, wsz);
+                    
+                    fprintf(stdout, "SPS...\n");
+                    break;
+                case NAL_UNIT_TYPE_PPS:
+                    h264_read_nal_unit(rh, p, nal_end - nal_start);
+                    
+                    sz2 = h264_write_nal_unit(rh, wp, wsz);
+                    fprintf(stdout, "PPS...\n");
+                    break;
+                case NAL_UNIT_TYPE_CODED_SLICE_IDR:
+                case NAL_UNIT_TYPE_CODED_SLICE_NON_IDR:
+                    h264_read_nal_unit(rh, p, nal_end - nal_start);
+                    
+                    sz2 = h264_write_nal_unit(rh, wp, wsz);
+                    memcpy(wp + sz2, p+sz2, nal_end - (nal_start + sz2));
+                    sz2 = nal_end - nal_start;
+                    fprintf(stdout, "IDR...\n");
+                    break;
+                default:
+                    break;
+            }
+            
+            p += (nal_end - nal_start);
+            sz -= nal_end;
+
+            wp += sz2;
+            wsz -= sz2;
+        }
+        
+        // if no NALs found in buffer, discard it
+        if (p == buf) 
+        {
+            fprintf( stderr, "!! Did not find any NALs between offset %lld (0x%04llX), size %lld (0x%04llX), discarding \n",
+                (long long int)off, 
+                (long long int)off, 
+                (long long int)off + sz, 
+                (long long int)off + sz);
+            
+            p = buf + sz;
+            sz = 0;
+        }
+        
+        memmove(buf, p, sz);
+        off += p - buf;
+        p = buf;
+    }
+
+    fwrite(wbuf, 1, BUFSIZE-wsz, outfile);
+
+    h264_free(rh);
+    h264_free(wh);
+
+    free(buf);
+    free(wbuf);
+
     return 0;
 }
